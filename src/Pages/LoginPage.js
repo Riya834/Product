@@ -1,228 +1,183 @@
+'use client'
+
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { auth, provider } from '../firebase';
-import { signInWithPopup } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
-import background from '../Images/webpage_copy.jpg';
+import { FaEye, FaEyeSlash, FaGoogle } from 'react-icons/fa';
 
-import {
-  Button,
-  TextField,
-  Typography,
-  Container,
-  Grid,
-  Avatar,
-  Snackbar,
-  Alert,
-  Paper,
-  InputAdornment,
-  IconButton,
-} from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import GoogleIcon from '@mui/icons-material/Google';
-
-const Login = () => {
-  const navigate = useNavigate();
+export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  // Function to handle login
-  const handleLogin = async (e) => {
-    e.preventDefault(); // Prevent form submission from reloading the page
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
+    console.log(email ,password)
 
     try {
-      // Call your backend API to log in
       const response = await axios.post('http://localhost:5000/api/auth/login', {
         email,
         password,
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
-      console.log('Login Response:', response.data); // Log the response for debugging
-      navigate('/home');
+      if (response.data && response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('userEmail', email);
+        navigate('/home');
+      } else {
+        throw new Error('Login failed: No token received');
+      }
     } catch (error) {
-      console.error('Login Error:', error); // Log any error that occurs
-      setSnackbarMessage(error.response?.data?.message || 'An error occurred');
-      setSnackbarOpen(true); // Open Snackbar for error messages
+      console.error('Login error:', error);
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          setError(`Error ${error.response.status}: ${error.response.data.message || 'An error occurred during login'}`);
+        } else if (error.request) {
+          // The request was made but no response was received
+          setError('No response received from server. Please check your internet connection and try again.');
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          setError('An error occurred while setting up the request. Please try again.');
+        }
+      } else {
+        setError('An unexpected error occurred. Please try again.');
+      }
     }
   };
 
-  // Function to handle Google sign-in
   const handleGoogleSignIn = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      setSnackbarMessage(`Welcome back, ${user.displayName}`);
-      setSnackbarOpen(true);
-      navigate('/home'); // Redirect to home after Google sign-in
-    } catch (error) {
-      setSnackbarMessage(error.message);
-      setSnackbarOpen(true); // Open Snackbar for error messages
-    }
-  };
-
-  // Toggle password visibility
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
+    // Implement Google Sign-In logic here
+    console.log('Google Sign-In clicked');
+    // After successful Google Sign-In, redirect to homepage
+    // navigate('/home');
   };
 
   return (
-    <div
-      style={{
-        backgroundImage: `url(${background})`, // Direct path to the image in the public folder
-        backgroundSize: 'cover',  // Ensure the image covers the entire area
-        backgroundPosition: 'center', // Center the background image
-        minHeight: '100vh', // Full height of the viewport
-        minWidth: '100vw',  // Full width of the viewport
-        display: 'flex',
-        alignItems: 'center', // Center content vertically
-        justifyContent: 'center', // Center content horizontally
-      }}
-    >
-      <Container component="main" maxWidth="xs" >
-        <Paper
-          elevation={10}
-          sx={{
-            padding: 4,
-            borderRadius: 3,
-            backgroundColor: 'rgba(249, 249, 249, 0.8)', // Set a semi-transparent background
-            width: '90%',
-            maxWidth: '400px',
-            alignSelf: 'flex-start',
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: 'primary.main', margin: 'auto' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography variant="h5" component="h1" align="center" gutterBottom>
-            Welcome Back!
-          </Typography>
-          <form onSubmit={handleLogin}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Welcome back!</h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          {"Don't have an account? "}
+          <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+            Sign up
+          </Link>
+        </p>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Work Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="Enter your work email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
                   required
-                  fullWidth
-                  label="Work Email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="example@site.com"
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: '#3f51b5',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: '#1a73e8',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#1a73e8',
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  label="Password"
-                  type={showPassword ? 'text' : 'password'}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  placeholder="Enter password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={togglePasswordVisibility}
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: '#3f51b5',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: '#1a73e8',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#1a73e8',
-                      },
-                    },
-                  }}
                 />
-              </Grid>
-              <Grid item xs={12}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  sx={{ mt: 2, py: 1.5, fontSize: '16px' }}
-                >
-                  Log In
-                </Button>
-              </Grid>
-            </Grid>
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  <button
+                    type="button"
+                    className="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="text-sm">
+                <Link to="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
+                  Forgot Password?
+                </Link>
+              </div>
+              <div className="text-sm">
+                <Link to="/help" className="font-medium text-indigo-600 hover:text-indigo-500">
+                  Help
+                </Link>
+              </div>
+            </div>
+
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+
+            <button
+              type="submit"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Log In
+            </button>
           </form>
 
-          <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-            Or sign in with
-          </Typography>
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">OR</span>
+              </div>
+            </div>
 
-          <Grid container spacing={2} justifyContent="center" sx={{ mt: 1 }}>
-            <Grid item>
-              <Button
-                variant="outlined"
-                color="inherit"
-                startIcon={<GoogleIcon />}
+            <div className="mt-6">
+              <button
+                type="button"
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                 onClick={handleGoogleSignIn}
-                sx={{
-                  borderColor: '#db4437',
-                  color: '#db4437',
-                  '&:hover': {
-                    backgroundColor: '#db4437',
-                    color: '#fff',
-                  },
-                }}
               >
-                Google
-              </Button>
-            </Grid>
-          </Grid>
+                <FaGoogle className="mr-2 h-5 w-5 text-red-500" />
+                Log in with Google
+              </button>
+            </div>
+          </div>
 
-          <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-            Don't have an account?{' '}
-            <Button variant="text" onClick={() => navigate('/')} sx={{ color: 'primary.main' }}>
-              Sign Up
-            </Button>
-          </Typography>
-
-          <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
-            <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%' }}>
-              {snackbarMessage}
-            </Alert>
-          </Snackbar>
-        </Paper>
-      </Container>
+          <p className="mt-6 text-xs text-center text-gray-500">
+            This site is protected by reCAPTCHA and the Google{' '}
+            <a href="https://policies.google.com/privacy" className="underline">Privacy Policy</a> and{' '}
+            <a href="https://policies.google.com/terms" className="underline">Terms of Service</a> apply.
+          </p>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default Login;
+}

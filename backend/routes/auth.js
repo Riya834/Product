@@ -5,15 +5,19 @@ const User = require('../models/User');
 const router = express.Router();
 
 // Register
-
 router.post('/register', async (req, res) => {
-  const {name, email, password } = req.body;
-  console.log(req.body)
+  const { fullName, email, password } = req.body;
   try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ name,email, password: hashedPassword });
+    const user = new User({ fullName, email, password: hashedPassword });
     await user.save();
-    res.status(201).json({ message: 'User registered' });
+    res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -30,11 +34,22 @@ router.post('/login', async (req, res) => {
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.cookie('token', token, { httpOnly: true });
-    res.status(200).json({ message: 'Logged in successfully' });
+    res.cookie('token', token, { 
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 3600000 // 1 hour
+    });
+    res.status(200).json({ message: 'Logged in successfully', token });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
+});
+
+// Logout
+router.post('/logout', (req, res) => {
+  res.clearCookie('token');
+  res.status(200).json({ message: 'Logged out successfully' });
 });
 
 module.exports = router;

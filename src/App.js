@@ -1,50 +1,17 @@
-// import React from 'react';
-// import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-// import Sign from './Pages/SignPage';
-
-// const App = () => {
-//   return (
-//     <Router>
-//       <Routes>
-//         <Route path="/" element={<Sign />} />
-//         <Route path="/" element={<Sign />} />
-//       </Routes>
-//     </Router>
-//   );
-// };
-
-// export default App;
-
-// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-// import SignUp from './Pages/SignPage';
-// import Login from './Pages/LoginPage'; // Your login component
-
-// function App() {
-//   return (
-//     <Router>
-//       <Routes>
-//         <Route path="/" element={<SignUp />} />
-//         <Route path="/login" element={<Login />} />
-//       </Routes>
-//     </Router>
-//   );
-// }
-
-// export default App;
-
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import SignUp from './Pages/SignPage';
-import Login from './Pages/LoginPage'; // Your login component
-import HomePage from './Pages/HomePage'; // Import the Home component
-// import AuthPage from './Pages/AuthPage'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import SignUpPage from './Pages/SignUpPage';
+import LoginPage from './Pages/LoginPage';
+import HomePage from './Pages/HomePage';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<SignUp/>} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/home" element={<HomePage />} /> Add this line for Home page
+        <Route path="/" element={<Navigate to="/signup" />} /> {/* Redirect root path to SignUpPage */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/home" element={<HomePage />} />
       </Routes>
     </Router>
   );
