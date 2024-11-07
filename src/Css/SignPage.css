@@ -1,0 +1,166 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to bottom right, #BEB7A4, #FFFFFC); /* Light gradient for a professional look */
+}
+
+.auth-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+    position: relative;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    top: 20px;
+    z-index: 10; /* Ensure buttons stay on top */
+}
+
+.auth-button {
+    background-color: #FF1B1C; /* Primary color */
+    color: #FFFFFC; /* Text color */
+    border: none; /* Remove default border */
+    border-radius: 5px;
+    padding: 12px 25px;
+    margin: 0 5px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.auth-button.active {
+    background-color: #FF7F11; /* Darker shade for active button */
+}
+
+.auth-button:hover {
+    background-color: #FF7F11; /* Darker shade on hover */
+    transform: translateY(-2px);
+}
+
+.formContainer {
+    background-color: #FFFFFC; /* Off white background for form */
+    border-radius: 10px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    padding: 40px;
+    width: 380px;
+    max-width: 100%;
+    margin-top: 80px;
+}
+
+.welcome-title {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #000000; /* Black color for the title */
+    font-size: 28px; /* Larger title */
+    font-weight: bold;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-weight: bold;
+    color: #000000; /* Black color for labels */
+    margin-bottom: 5px;
+    display: block;
+}
+
+.form-group input {
+    padding: 12px;
+    border: 1px solid #BEB7A4; /* Light gray for input border */
+    border-radius: 5px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    border-color: #FF1B1C; /* Focus color */
+}
+
+.password-input-group {
+    display: flex;
+    align-items: center;
+}
+
+.show-password-btn {
+    margin-left: 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #FF1B1C; /* Password visibility icon color */
+}
+
+.auth-btn {
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    background-color: #FF1B1C; /* Button background */
+    color: #FFFFFC; /* Button text color */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.auth-btn:hover {
+    background-color: #FF7F11; /* Darker shade on hover */
+    transform: translateY(-2px);
+}
+
+.social-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.google-btn,
+.facebook-btn {
+    width: 40px; /* Uniform icon size */
+    height: 40px;
+    border: 2px solid #FF1B1C; /* Match the button color */
+    border-radius: 50%; /* Circular buttons */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.google-btn:hover,
+.facebook-btn:hover {
+    transform: scale(1.1); /* Scale effect on hover */
+}
+
+.social-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.terms {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #000000; /* Black color for the terms */
+}
+
+a {
+    color: #FF1B1C; /* Link color */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
